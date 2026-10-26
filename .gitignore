@@ -218,3 +218,11 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Local datasets, figures, checkpoints and experiment results
+/datasets/
+/pic/
+/checkpoints/
+/results/
+/test_results/
+/result.txt
