@@ -59,22 +59,16 @@ def main():
     parser.add_argument('--output_attention', action='store_true', help='whether to output attention in encoder')
     parser.add_argument('--do_predict', action='store_true', help='whether to predict unseen future data')
 
-    # PRNet-only options. Missing values use ModelConfig defaults; other models
-    # keep their original argument values and do not consume these options.
+    # PRNet-only options are supplied explicitly by its experiment scripts.
+    # Other models do not consume these options.
     prnet = parser.add_argument_group('PRNet')
     prnet.add_argument('--patch_len', type=int, default=argparse.SUPPRESS, help='PRNet history patch length')
     prnet.add_argument('--patch_stride', type=int, default=argparse.SUPPRESS, help='PRNet history patch stride')
     prnet.add_argument('--future_patch_len', type=int, default=argparse.SUPPRESS, help='PRNet forecast patch length')
     prnet.add_argument('--ma_short', type=int, default=argparse.SUPPRESS, help='PRNet short moving-average window')
     prnet.add_argument('--ma_long', type=int, default=argparse.SUPPRESS, help='PRNet long moving-average window')
-    prnet.add_argument('--top_k', type=int, default=argparse.SUPPRESS, help='PRNet non-DC FFT candidate count')
-    prnet.add_argument('--num_queries', type=int, default=argparse.SUPPRESS, help='PRNet query library size')
-    prnet.add_argument('--router_hidden', type=int, default=argparse.SUPPRESS, help='PRNet query router hidden size')
-    prnet.add_argument('--min_period_overlap', type=int, default=argparse.SUPPRESS, help='PRNet minimum lag overlap')
     prnet.add_argument('--revin_affine', type=int, choices=[0, 1], default=argparse.SUPPRESS,
                        help='PRNet trainable RevIN affine transform: 1 enabled, 0 disabled')
-    prnet.add_argument('--initial_period_bias', type=float, default=argparse.SUPPRESS,
-                       help='PRNet initial period-attention bias strength')
 
     # optimization
     parser.add_argument('--num_workers', type=int, default=10, help='data loader num workers')

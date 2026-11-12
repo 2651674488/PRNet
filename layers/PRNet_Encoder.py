@@ -1,7 +1,6 @@
-"""Patch embedding and shared Transformer encoder for PRNet."""
+"""Shared Transformer encoder for embedded PRNet patches."""
 from __future__ import annotations
 
-import torch
 from torch import Tensor, nn
 
 from layers.PRNet_Config import ModelConfig
@@ -28,23 +27,14 @@ class SharedPatchEncoder(nn.Module):
     def __init__(self, cfg: ModelConfig):
         super().__init__()
         self.cfg = cfg
-        self.patch_embed = nn.Linear(cfg.patch_len, cfg.d_model)
-        self.history_position = nn.Parameter(torch.zeros(1, 1, cfg.n_history_patches, cfg.d_model))
-        self.scale_embedding = nn.Parameter(torch.zeros(3, cfg.d_model))
         self.blocks = nn.ModuleList([
             EncoderBlock(cfg.d_model, cfg.n_heads, cfg.d_ff, cfg.dropout)
             for _ in range(cfg.encoder_layers)
         ])
-        nn.init.trunc_normal_(self.history_position, std=0.02)
-        nn.init.trunc_normal_(self.scale_embedding, std=0.02)
 
-    def forward(self, x: Tensor, scale_id: int) -> Tensor:
-        b, s, c = x.shape
-        # [B, C, S] -> [B, C, N, patch_len]
-        patches = x.transpose(1, 2).unfold(-1, self.cfg.patch_len, self.cfg.patch_stride)
-        e = self.patch_embed(patches)
-        e = e + self.history_position + self.scale_embedding[scale_id].view(1, 1, 1, -1)
-        h = e.reshape(b * c, self.cfg.n_history_patches, self.cfg.d_model)
+    def forward(self, embeddings: Tensor) -> Tensor:
+        b, c, n, d = embeddings.shape
+        h = embeddings.reshape(b * c, n, d)
         for block in self.blocks:
             h = block(h)
-        return h.reshape(b, c, self.cfg.n_history_patches, self.cfg.d_model)
+        return h.reshape(b, c, n, d)

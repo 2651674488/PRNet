@@ -19,6 +19,8 @@ class MultiScaleDecomposition(nn.Module):
 
     def __init__(self, short_window, long_window):
         super().__init__()
+        if not 1 <= short_window < long_window:
+            raise ValueError("Moving averages require 1 <= ma_short < ma_long")
         self.short_window = short_window
         self.long_window = long_window
 

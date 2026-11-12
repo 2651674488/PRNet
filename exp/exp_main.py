@@ -61,7 +61,7 @@ class Exp_Main(Exp_Basic):
 
         def _run_model():
             outputs = self.model(batch_x, batch_x_mark, dec_inp, batch_y_mark)
-            if self.args.output_attention:
+            if self.args.output_attention and self.args.model != 'PRNet':
                 outputs = outputs[0]
             return outputs
 
